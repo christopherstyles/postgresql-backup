@@ -83,6 +83,15 @@ PostgresqlBackup.configure do |config|
   # is set to S3.
   config.region = ''
 
+  # For S3-compatible APIs (DigitalOcean Spaces, Cloudflare R2, MinIO,
+  # etc.), set the provider's endpoint URL. Leave empty for Amazon S3;
+  # the default is ''.
+  #
+  # Examples:
+  #   config.endpoint = 'https://nyc3.digitaloceanspaces.com'
+  #   config.endpoint = 'https://<account_id>.r2.cloudflarestorage.com'
+  config.endpoint = ''
+
   # Backup files are created using a pattern made by the current date
   # and time. If you want to add a sufix to the files, change this
   # attribute.
@@ -122,6 +131,7 @@ However, you can set (or override) a few things when executing the rake:
 - repository: `BKP_REPOSITORY='File System' bundle exec rake postgresql_backup:dump`
 - bucket: `BKP_BUCKET='my-bucket' bundle exec rake postgresql_backup:dump`
 - region: `BKP_REGION='us-east-1' bundle exec rake postgresql_backup:dump`
+- endpoint: `BKP_ENDPOINT='https://nyc3.digitaloceanspaces.com' bundle exec rake postgresql_backup:dump`
 - remote_path: `BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump`
 
 Be aware that, if the gem is configured to use the file system and you force the task to use S3, AWS related attributes must be set, like the access key and the secret key.
@@ -131,6 +141,8 @@ You can combine these variables above any way you want:
 ```
 BKP_REPOSITORY='S3' BKP_BUCKET='my-bucket' BKP_REGION='us-east-1' BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump
 ```
+
+For Spaces, R2, or another S3-compatible host, add `BKP_ENDPOINT` (same value you would set as `config.endpoint` in the initializer).
 
 Important note: config/database.yml is used for database configuration,
 but you may be prompted for the database user's password.
@@ -154,7 +166,8 @@ Again, you can use these environment variables:
 - repository: `BKP_REPOSITORY='File System' bundle exec rake postgresql_backup:restore`
 - bucket: `BKP_BUCKET='my-bucket' bundle exec rake postgresql_backup:restore`
 - region: `BKP_REGION='us-east-1' bundle exec rake postgresql_backup:restore`
-- remote_path: `BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:dump`
+- endpoint: `BKP_ENDPOINT='https://nyc3.digitaloceanspaces.com' bundle exec rake postgresql_backup:restore`
+- remote_path: `BKP_REMOTE_PATH='_backups/database' bundle exec rake postgresql_backup:restore`
 
 Or make any combination you want with them:
 
