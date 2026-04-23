@@ -83,13 +83,12 @@ PostgresqlBackup.configure do |config|
   # is set to S3.
   config.region = ''
 
-  # For S3-compatible APIs (DigitalOcean Spaces, Cloudflare R2, MinIO,
-  # etc.), set the provider's endpoint URL. Leave empty for Amazon S3;
+  # For S3-compatible APIs (DigitalOcean Spaces, MinIO, etc.),
+  # set the provider's endpoint URL. Leave empty for Amazon S3;
   # the default is ''.
   #
   # Examples:
   #   config.endpoint = 'https://nyc3.digitaloceanspaces.com'
-  #   config.endpoint = 'https://<account_id>.r2.cloudflarestorage.com'
   config.endpoint = ''
 
   # Backup files are created using a pattern made by the current date
