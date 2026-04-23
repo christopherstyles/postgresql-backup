@@ -69,6 +69,7 @@ namespace :postgresql_backup do
       config.repository = ENV['BKP_REPOSITORY'] if ENV['BKP_REPOSITORY'].present?
       config.bucket = ENV['BKP_BUCKET'] if ENV['BKP_BUCKET'].present?
       config.region = ENV['BKP_REGION'] if ENV['BKP_REGION'].present?
+      config.endpoint = ENV['BKP_ENDPOINT'] if ENV['BKP_ENDPOINT'].present?
       config.remote_path = ENV['BKP_REMOTE_PATH'] if ENV['BKP_REMOTE_PATH'].present?
       config
     end
@@ -101,6 +102,7 @@ namespace :postgresql_backup do
       show_config_for('File suffix', configuration.file_suffix),
       configuration.s3? ? show_config_for('Bucket', configuration.bucket) : nil,
       configuration.s3? ? show_config_for('Region', configuration.region) : nil,
+      configuration.s3? ? show_config_for('Endpoint', configuration.endpoint) : nil,
       configuration.s3? ? show_config_for('Remote path', configuration.remote_path) : nil
     ].compact
   end

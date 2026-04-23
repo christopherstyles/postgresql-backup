@@ -4,14 +4,58 @@ require_relative '../../lib/configuration'
 RSpec.describe Tools::S3Storage do
   let(:remote_path) { 'db/data' }
   let(:local_path) { 'db/local/backups' }
+  let(:endpoint) { '' }
   let(:configuration) do
     Configuration.new(
       remote_path: remote_path,
       backup_folder: local_path,
-      bucket: 'my-bucket'
+      bucket: 'my-bucket',
+      endpoint: endpoint
     )
   end
   subject(:storage) { described_class.new(configuration) }
+
+  describe 'Fog::Storage initialization' do
+    let(:fog_storage) { double(directories: double) }
+
+    before do
+      allow(Fog::Storage).to receive(:new).and_return(fog_storage)
+    end
+
+    let(:base_options) do
+      {
+        provider: 'AWS',
+        region: '',
+        aws_access_key_id: '',
+        aws_secret_access_key: ''
+      }
+    end
+
+    it 'omits endpoint when configuration endpoint is blank' do
+      expect(Fog::Storage).to receive(:new).with(base_options)
+      described_class.new(configuration)
+    end
+
+    context 'when endpoint is configured' do
+      let(:endpoint) { 'https://nyc3.digitaloceanspaces.com' }
+
+      it 'passes endpoint to Fog::Storage' do
+        expect(Fog::Storage).to receive(:new).with(
+          base_options.merge(endpoint: 'https://nyc3.digitaloceanspaces.com')
+        )
+        described_class.new(configuration)
+      end
+    end
+
+    context 'when endpoint is only whitespace' do
+      let(:endpoint) { "  \t  " }
+
+      it 'omits endpoint' do
+        expect(Fog::Storage).to receive(:new).with(base_options)
+        described_class.new(configuration)
+      end
+    end
+  end
 
   describe '#upload' do
     let(:remote_file) { double(create: '') }
@@ -23,9 +67,11 @@ RSpec.describe Tools::S3Storage do
 
     it 'sends the file to the remote repository' do
       expect(remote_file).to receive(:create).with(
-        key: 'db/data/backup_file.sql',
-        body: 'file body',
-        tags: 'production-backup'
+        {
+          key: 'db/data/backup_file.sql',
+          body: 'file body',
+          tags: 'production-backup'
+        }
       )
 
       subject.upload('/rails-app/db/backups/backup_file.sql', 'production-backup')

@@ -8,12 +8,7 @@ module Tools
   class S3Storage
     def initialize(configuration)
       @configuration = configuration
-      @s3 = Fog::Storage.new(
-        provider: 'AWS',
-        region: configuration.region,
-        aws_access_key_id: configuration.aws_access_key_id,
-        aws_secret_access_key: configuration.aws_secret_access_key
-      )
+      @s3 = Fog::Storage.new(storage_options)
     end
 
     # Send files to S3.
@@ -74,6 +69,18 @@ module Tools
     private
 
     attr_reader :configuration, :s3
+
+    def storage_options
+      {
+        provider: 'AWS',
+        region: configuration.region,
+        aws_access_key_id: configuration.aws_access_key_id,
+        aws_secret_access_key: configuration.aws_secret_access_key
+      }.tap do |opts|
+        ep = configuration.endpoint.to_s.strip
+        opts[:endpoint] = ep unless ep.empty?
+      end
+    end
 
     # Force UTF-8 encoding and remove the production environment from
     # the `ar_internal_metadata` table, unless the current Rails env

@@ -1,3 +1,7 @@
+### Unreleased
+
+- Add optional `endpoint` on `Configuration` for S3-compatible storage (e.g. DigitalOcean Spaces, Cloudflare R2). When set, it is passed to `Fog::Storage.new`. Rake tasks also honor `BKP_ENDPOINT`.
+
 ### v0.0.8 - 2023-07-07
 
 - Add support to hooks (methods to run before/after dump and restore)
