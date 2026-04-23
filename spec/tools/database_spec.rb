@@ -35,7 +35,7 @@ RSpec.describe Tools::Database do
       let(:debug) { false }
 
       it 'executes pg_dump redirecting the output to a dark hole' do
-        expect(database).to receive(:system).with(cmd, err: File::NULL)
+        expect(database).to receive(:system).with(cmd, { err: File::NULL })
         database.dump(debug: debug)
       end
 
